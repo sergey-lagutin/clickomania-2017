@@ -1,5 +1,7 @@
 package duel
 
+import java.util
+
 import scala.collection.mutable
 
 case class Move(x: Int, y: Int)
@@ -13,7 +15,52 @@ case class Component(color: Int) {
 }
 
 class Board(size: Int, array: Array[Array[Int]]) {
-  def makeMove(move: Move): Board = ???
+  def makeMove(move: Move): Board = {
+    val newArray = new Array[Array[Int]](size)
+    array.copyToArray(newArray)
+
+    val cell = Cell(move.x, move.y)
+    val component = components.find(_.cells.contains(cell)).get
+    component.cells.foreach { cell =>
+      newArray(cell.x).update(cell.y, -1)
+    }
+    print(newArray)
+
+    compact(newArray)
+
+    print(newArray)
+
+    new Board(size, newArray)
+  }
+
+  private def compact(array: Array[Array[Int]]): Array[Array[Int]] = {
+    for {
+      x <- array.indices
+      n <- 0 until size
+      row = array(x)
+      y <- (0 until size - 1).reverse
+    } {
+      if (row(y) != -1 && row(y + 1) == -1) {
+        row.update(y + 1, row(y))
+        row.update(y, -1)
+      }
+    }
+
+    for {
+      x <- (0 until size - 1).reverse
+      row = array(x)
+      nextRow = array(x + 1)
+      if row.forall(_ == -1)
+    } {
+      array.update(x + 1, row)
+      array.update(x, nextRow)
+    }
+
+    array
+  }
+
+  private def print(array: Array[Array[Int]]): Unit =
+    println(util.Arrays.deepToString(array.asInstanceOf[Array[AnyRef]]))
 
   def hasSolution: Boolean =
     components
