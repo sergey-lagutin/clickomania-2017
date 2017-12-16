@@ -8,14 +8,16 @@ class Solver {
       else {
         val newBoards = for {
           move <- current.possibleMoves
-          newBoard: Board = board.makeMove(move)
-        } yield (newBoard, move :: acc)
+          newBoard = current.makeMove(move)
+        } yield {
+          println("new board: " + newBoard)
+          (newBoard, move :: acc)
+        }
 
         newBoards.map { case (newBoard, moves) =>
           loop(newBoard, moves)
-        }
-          .filter(_.isDefined)
-          .head
+        }.find(_.isDefined)
+          .flatten
       }
 
     loop(board, Nil)

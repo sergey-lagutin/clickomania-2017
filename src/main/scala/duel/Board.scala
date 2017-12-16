@@ -16,21 +16,31 @@ case class Component(color: Int) {
 
 class Board(size: Int, array: Array[Array[Int]]) {
   def makeMove(move: Move): Board = {
-    val newArray = new Array[Array[Int]](size)
-    array.copyToArray(newArray)
+    println(move)
+    print(array)
+
+    val newArray = copy()
 
     val cell = Cell(move.x, move.y)
     val component = components.find(_.cells.contains(cell)).get
     component.cells.foreach { cell =>
       newArray(cell.x).update(cell.y, -1)
     }
-    print(newArray)
 
     compact(newArray)
 
     print(newArray)
 
-    new Board(size, newArray)
+    new Board(size, newArray.map(_.toArray))
+  }
+
+  private def copy(): Array[Array[Int]] = {
+    val a = Array.fill(size, size)(-1)
+    for {
+      x <- array.indices
+      y <- array.indices
+    } a(x).update(y, array(x)(y))
+    a
   }
 
   private def compact(array: Array[Array[Int]]): Array[Array[Int]] = {
@@ -61,6 +71,9 @@ class Board(size: Int, array: Array[Array[Int]]) {
 
   private def print(array: Array[Array[Int]]): Unit =
     println(util.Arrays.deepToString(array.asInstanceOf[Array[AnyRef]]))
+
+  override def toString: String =
+    util.Arrays.deepToString(array.asInstanceOf[Array[AnyRef]])
 
   def hasSolution: Boolean =
     components
