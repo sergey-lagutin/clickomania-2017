@@ -9,13 +9,20 @@ case class Cell(x: Int, y: Int)
 case class Component(color: Int) {
   var cells: List[Cell] = Nil
 
-  def size = cells.size
+  def cellCount: Int = cells.size
 }
 
 class Board(size: Int, array: Array[Array[Int]]) {
-  def makeMove(move: Move) : Board = ???
+  def makeMove(move: Move): Board = ???
 
-  def hasSolution : Boolean = ???
+  def hasSolution: Boolean =
+    components
+      .groupBy(_.color)
+      .toList
+      .map(_._2.toList)
+      .forall { list =>
+        list.size > 1 || list.head.cellCount > 1
+      }
 
   private val cells = new mutable.HashSet[Cell]()
 
@@ -60,7 +67,7 @@ class Board(size: Int, array: Array[Array[Int]]) {
   def possibleMoves: List[Move] =
     components
       .filterNot(_.color == -1)
-      .filterNot(_.size == 1)
+      .filterNot(_.cellCount == 1)
       .map { comp =>
         val cell = comp.cells.head
         Move(cell.x, cell.y)
