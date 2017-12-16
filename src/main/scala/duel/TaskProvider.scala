@@ -33,5 +33,5 @@ class TaskProvider {
     new Board(game.width, game.realCells)
   }
 
-  def submit(moves: Move*): Unit = ???
+  def submit(moves: Seq[Move]): Unit = ???
 }

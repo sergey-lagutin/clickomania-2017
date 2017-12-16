@@ -50,4 +50,15 @@ class Board(size: Int, array: Array[Array[Int]]) {
       component
     }
 
+  def isSolved: Boolean =
+    components.size == 1 && components.head.color == -1
+
+  def possibleMoves: List[Move] =
+    components
+      .filterNot(_.color == -1)
+      .filterNot(_.size == 1)
+      .map { comp =>
+        val cell = comp.cells.head
+        Move(cell.x, cell.y)
+      }.toList
 }
