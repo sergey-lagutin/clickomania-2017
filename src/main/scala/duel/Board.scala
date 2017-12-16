@@ -57,13 +57,14 @@ class Board(size: Int, array: Array[Array[Int]]) {
     }
 
     for {
-      x <- (0 until size - 1).reverse
+      x <- (1 until size).reverse
+      n <- 0 until size
       row = array(x)
-      nextRow = array(x + 1)
+      prevRow = array(x - 1)
       if row.forall(_ == -1)
     } {
-      array.update(x + 1, row)
-      array.update(x, nextRow)
+      array.update(x - 1, row)
+      array.update(x, prevRow)
     }
 
     array

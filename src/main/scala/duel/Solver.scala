@@ -9,10 +9,7 @@ class Solver {
         val newBoards = for {
           move <- current.possibleMoves
           newBoard = current.makeMove(move)
-        } yield {
-          println("new board: " + newBoard)
-          (newBoard, move :: acc)
-        }
+        } yield (newBoard, move :: acc)
 
         newBoards.map { case (newBoard, moves) =>
           loop(newBoard, moves)

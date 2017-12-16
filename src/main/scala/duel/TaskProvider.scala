@@ -33,5 +33,10 @@ class TaskProvider {
     new Board(game.width, game.realCells)
   }
 
-  def submit(moves: Seq[Move]): Unit = ???
+  def submit(moves: Seq[Move]): Unit = {
+    val data = s"success_moves=[${moves.map(m => s"[${m.x},${m.y}]").mkString(",")}]"
+    println(data)
+    val response = Http(POST).postData(data).asString
+    println(response)
+  }
 }
