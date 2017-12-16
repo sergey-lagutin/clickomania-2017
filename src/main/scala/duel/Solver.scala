@@ -6,15 +6,13 @@ class Solver {
       if (current.isSolved) Some(acc)
       else if (!current.hasSolution) None
       else {
-        val newBoards = for {
-          move <- current.possibleMoves
-          newBoard = current.makeMove(move)
-        } yield (newBoard, move :: acc)
-
-        newBoards.map { case (newBoard, moves) =>
-          loop(newBoard, moves)
-        }.find(_.isDefined)
-          .flatten
+        current.possibleMoves.foldLeft(Option.empty[List[Move]]) { case (acc1, move) =>
+          if (acc1.isDefined) acc1
+          else {
+            val newBoard = current.makeMove(move)
+            loop(newBoard, move :: acc)
+          }
+        }
       }
 
     loop(board, Nil)

@@ -8,8 +8,8 @@ class Worker {
     val board = provider.get(5)
     println(board)
     solver.findSolution(board) match {
-      case None => throw new RuntimeException()
       case Some(moves) => provider.submit(moves.reverse)
+      case None =>
     }
   }
 }

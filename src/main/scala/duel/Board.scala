@@ -9,27 +9,27 @@ case class Move(x: Int, y: Int)
 case class Cell(x: Int, y: Int)
 
 case class Component(color: Int) {
-  var cells: List[Cell] = Nil
+  var cells: Set[Cell] = Set()
 
   def cellCount: Int = cells.size
 }
 
 class Board(size: Int, array: Array[Array[Int]]) {
   def makeMove(move: Move): Board = {
-    println(move)
-    print(array)
+//    println(move)
+//    print(array)
 
     val newArray = copy()
 
     val cell = Cell(move.x, move.y)
-    val component = components.find(_.cells.contains(cell)).get
+    val component = components.find(_.cells.toSet.contains(cell)).get
     component.cells.foreach { cell =>
       newArray(cell.x).update(cell.y, -1)
     }
 
     compact(newArray)
 
-    print(newArray)
+//    print(newArray)
 
     new Board(size, newArray.map(_.toArray))
   }
@@ -61,7 +61,7 @@ class Board(size: Int, array: Array[Array[Int]]) {
       n <- 0 until size
       row = array(x)
       prevRow = array(x - 1)
-      if row.forall(_ == -1)
+      if prevRow.forall(_ == -1)
     } {
       array.update(x - 1, row)
       array.update(x, prevRow)
@@ -99,7 +99,7 @@ class Board(size: Int, array: Array[Array[Int]]) {
       array(cell.x)(cell.y) == array(that.x)(that.y)
 
     cells += cell
-    component.cells = cell :: component.cells
+    component.cells += cell
     List((-1, 0), (1, 0), (0, -1), (0, 1))
       .map {
         case (dx, dy) => Cell(cell.x + dx, cell.y + dy)
