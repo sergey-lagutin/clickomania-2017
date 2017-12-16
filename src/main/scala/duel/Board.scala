@@ -13,6 +13,10 @@ case class Component(color: Int) {
 }
 
 class Board(size: Int, array: Array[Array[Int]]) {
+  def makeMove(move: Move) : Board = ???
+
+  def hasSolution : Boolean = ???
+
   private val cells = new mutable.HashSet[Cell]()
 
   private def inRange(fromIncl: Int, toExcl: Int)(i: Int): Boolean =
