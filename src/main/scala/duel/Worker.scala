@@ -1,0 +1,3 @@
+package duel
+
+class Worker
