@@ -15,6 +15,8 @@ case class Game(width: Int, height: Int, cells: String) {
       .map(_.toInt)
 }
 
+case class Result(status: String, score: Int)
+
 class TaskProvider {
   private val TOKEN = "QZEXVABGZJVZBRNM"
   private val POST = s"https://clickomania.anadea.info/game/$TOKEN"
@@ -22,21 +24,24 @@ class TaskProvider {
   private def getUrl(size: Int): String =
     s"https://clickomania.anadea.info/game?size=$size&token=$TOKEN"
 
+  private implicit val formats = {
+    Serialization.formats(FullTypeHints(List(classOf[Game], classOf[Result])))
+  }
+
   def get(size: Int): Board = {
     val json = Http(getUrl(size)).asString.body
-
-    implicit val formats = {
-      Serialization.formats(FullTypeHints(List(classOf[Game])))
-    }
 
     val game = parse(json).extract[Game]
     new Board(game.width, game.realCells)
   }
 
-  def submit(moves: Seq[Move]): Unit = {
+  def submit(moves: Seq[Move]): Either[String, Int] = {
     val data = s"success_moves=[${moves.map(m => s"[${m.x},${m.y}]").mkString(",")}]"
     println(data)
-    val response = Http(POST).postData(data).asString
-    println(response)
+    val json = Http(POST).postData(data).asString.body
+    println(json)
+    val result = parse(json).extract[Result]
+    if (result.status.startsWith("ok")) Right(result.score)
+    else Left(result.status)
   }
 }
