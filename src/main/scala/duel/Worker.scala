@@ -11,8 +11,17 @@ class Worker {
     println(board)
     solver.findSolution(board) match {
       case Some(moves) =>
-        provider.submit(moves.reverse) match {
-          case Left(error) => println(error)
+        val orderedMoves = moves.reverse
+        provider.submit(orderedMoves) match {
+          case Left(error) =>
+            println(error)
+            println(orderedMoves)
+            orderedMoves.foldLeft(board){
+              case (b, move) =>
+                println(b)
+                println(move)
+                b.makeMove(move)
+            }
           case Right(score) => points += score
         }
       case None => throw new RuntimeException

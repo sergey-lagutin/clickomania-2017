@@ -43,8 +43,8 @@ class Board(size: Int, array: Array[Array[Int]]) {
 
   private def compact(array: Array[Array[Int]]): Array[Array[Int]] = {
     for {
-      x <- array.indices
       n <- 0 until size
+      x <- array.indices
       row = array(x)
       y <- (0 until size - 1).reverse
     } {
@@ -55,8 +55,8 @@ class Board(size: Int, array: Array[Array[Int]]) {
     }
 
     for {
-      x <- (1 until size).reverse
       n <- 0 until size
+      x <- (1 until size)
       row = array(x)
       prevRow = array(x - 1)
       if prevRow.forall(_ == -1)
