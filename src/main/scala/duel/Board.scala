@@ -1,7 +1,5 @@
 package duel
 
-import java.util
-
 import scala.collection.mutable
 
 case class Move(x: Int, y: Int)
@@ -71,10 +69,15 @@ class Board(size: Int, array: Array[Array[Int]]) {
   }
 
   private def print(array: Array[Array[Int]]): Unit =
-    println(util.Arrays.deepToString(array.asInstanceOf[Array[AnyRef]]))
+    println(arrayToString(array))
+
+  private def arrayToString(array: Array[Array[Int]]): String =
+    array
+      .map(_.mkString(start = "|", sep = " ", end = "|"))
+      .mkString("\n")
 
   override def toString: String =
-    util.Arrays.deepToString(array.asInstanceOf[Array[AnyRef]])
+    arrayToString(array)
 
   def hasSolution: Boolean =
     components
