@@ -10,6 +10,17 @@ case class Component(color: Int) {
   var cells: Set[Cell] = Set()
 
   def cellCount: Int = cells.size
+
+  lazy val minX: Int = cells.map(_.x).min
+
+  lazy val minY: Int = cells.map(_.y).min
+
+  lazy val maxX: Int = cells.map(_.x).max
+
+  lazy val maxY: Int = cells.map(_.y).max
+
+  lazy val x: Int = maxX - minX + 1
+  lazy val y: Int = maxY - minY + 1
 }
 
 class Board(size: Int, array: Array[Array[Int]]) {
