@@ -25,8 +25,6 @@ case class Component(color: Int) {
 
 class Board(size: Int, array: Array[Array[Int]]) {
   def makeMove(move: Move): Board = {
-//    println(move)
-//    print(array)
 
     val newArray = copy()
 
@@ -37,8 +35,6 @@ class Board(size: Int, array: Array[Array[Int]]) {
     }
 
     compact(newArray)
-
-//    print(newArray)
 
     new Board(size, newArray.map(_.toArray))
   }
@@ -139,12 +135,23 @@ class Board(size: Int, array: Array[Array[Int]]) {
   def isSolved: Boolean =
     components.size == 1 && components.head.color == -1
 
-  def possibleMoves: List[Move] =
-    components
+  def possibleMoves: List[Move] = {
+    val componentsToRemove = components
       .filterNot(_.color == -1)
       .filterNot(_.cellCount == 1)
+
+    sort(componentsToRemove)
       .map { comp =>
         val cell = comp.cells.head
         Move(cell.x, cell.y)
       }.toList
+  }
+
+  private def sort(cs: Seq[Component]): Seq[Component] = {
+    val colorMap = components
+      .groupBy(_.color)
+      .mapValues(_.size)
+
+    cs.sortBy(c => colorMap(c.color))
+  }
 }
