@@ -25,7 +25,7 @@ case class Component(color: Int) {
 
 class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Component]) {
   def this(size: Int, array: Array[Array[Int]]) {
-    this(size, array, cs => cs.sortBy(_.minY))
+    this(size, array, cs => cs.sortBy(_.y)(Ordering.Int.reverse))
   }
 
   def makeMove(move: Move): Board = {
