@@ -11,11 +11,13 @@ object StrategyTest {
   def strategies: Array[AnyRef] =
     Array(
       Array(nothing, "doNothing"),
-      Array(byMinX, "byMinX"),
       Array(byMaxX, "byMaxX"),
       Array(byMaxXMinY, "byMaxXMinY"),
+      Array(byMaxXMaxY, "byMaxXMaxY"),
       Array(byX, "byX"),
-      Array(byYReverse, "byYReverse")
+      Array(byYReverse, "byYReverse"),
+      Array(byMaxXDistance, "byMaxXDistance"),
+      Array(custom, "custom"),
     )
 
   private def nothing: Strategy = (cs: Seq[Component]) => cs
@@ -25,8 +27,6 @@ object StrategyTest {
     (x: Component, y: Component) => colorMap(x.color) - colorMap(y.color)
   }
 
-  private def byMinX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.minX)
-
   private def reverseInt = Ordering.Int.reverse
 
   private def byMaxX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxX)
@@ -34,9 +34,37 @@ object StrategyTest {
   private def byMaxXMinY: Strategy = (cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.minY))
 
+  private def byMaxXMaxY: Strategy = (cs: Seq[Component]) =>
+    cs.sortBy(c => (c.maxX, c.maxY))
+
   private def byX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.x)
 
   private def byYReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
+
+  private def byMaxXDistance: Strategy = (cs: Seq[Component]) =>
+    cs.sortBy(c => (c.maxX, c.distanceToZero))(Ordering.Tuple2(Ordering.Int, Ordering.Int))
+
+  private def sameColor(color: Int): Ordering[Component] =
+    (x: Component, y: Component) =>
+      if (x.color == color) -1
+      else if (y.color == color) 1
+      else 0
+
+  private def custom: Strategy = (cs: Seq[Component]) => {
+    val completedColor = cs
+      .groupBy(_.color)
+      .toList
+      .find {
+        case (_, components) => components.forall(_.cellCount > 1)
+      }
+
+    completedColor match {
+      case Some((color, _)) =>
+        byMaxXDistance(
+          cs.sorted(sameColor(color).reverse))
+      case None => byMaxXDistance(cs)
+    }
+  }
 }
 
 class StrategyTest {

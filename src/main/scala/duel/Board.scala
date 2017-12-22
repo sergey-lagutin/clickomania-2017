@@ -6,7 +6,7 @@ case class Move(x: Int, y: Int)
 
 case class Cell(x: Int, y: Int)
 
-case class Component(color: Int) {
+case class Component(color: Int, boardSize: Int) {
   var cells: Set[Cell] = Set()
 
   def cellCount: Int = cells.size
@@ -21,11 +21,15 @@ case class Component(color: Int) {
 
   lazy val x: Int = maxX - minX + 1
   lazy val y: Int = maxY - minY + 1
+
+  private def sqr(i: Int): Int = i * i
+
+  lazy val distanceToZero: Int = sqr(boardSize - maxX - 1) + sqr(minY)
 }
 
 class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Component]) {
   def this(size: Int, array: Array[Array[Int]]) {
-    this(size, array, cs => cs.sortBy(_.y)(Ordering.Int.reverse))
+    this(size, array, cs => cs.sortBy(c => (c.maxX, c.distanceToZero))(Ordering.Tuple2(Ordering.Int, Ordering.Int)))
   }
 
   def makeMove(move: Move): Board = {
@@ -130,7 +134,7 @@ class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Com
       cell = Cell(x, y)
       if !cells(cell)
     } yield {
-      val component = Component(array(x)(y))
+      val component = Component(array(x)(y), size)
       buildComponent(component, cell)
       component
     }
