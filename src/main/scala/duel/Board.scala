@@ -43,6 +43,8 @@ class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Com
     new Board(size, newArray.map(_.toArray))
   }
 
+  def rawData: Array[Array[Int]] = copy()
+
   private def copy(): Array[Array[Int]] = {
     val a = Array.fill(size, size)(-1)
     for {
