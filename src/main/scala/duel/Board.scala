@@ -75,9 +75,6 @@ class Board(size: Int, array: Array[Array[Int]]) {
     array
   }
 
-  private def print(array: Array[Array[Int]]): Unit =
-    println(arrayToString(array))
-
   private def arrayToString(array: Array[Array[Int]]): String =
     array
       .map(_.mkString(start = "|", sep = " ", end = "|"))

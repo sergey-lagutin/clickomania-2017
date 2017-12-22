@@ -37,9 +37,7 @@ class TaskProvider {
 
   def submit(moves: Seq[Move]): Either[String, Int] = {
     val data = s"success_moves=[${moves.map(m => s"[${m.x},${m.y}]").mkString(",")}]"
-    println(data)
     val json = Http(POST).postData(data).asString.body
-    println(json)
     val result = parse(json).extract[Result]
     if (result.status.startsWith("ok")) Right(result.score)
     else Left(result.status)
