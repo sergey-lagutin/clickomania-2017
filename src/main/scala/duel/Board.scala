@@ -23,7 +23,11 @@ case class Component(color: Int) {
   lazy val y: Int = maxY - minY + 1
 }
 
-class Board(size: Int, array: Array[Array[Int]]) {
+class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Component]) {
+  def this(size: Int, array: Array[Array[Int]]) {
+    this(size, array, cs => cs)
+  }
+
   def makeMove(move: Move): Board = {
 
     val newArray = copy()
@@ -142,13 +146,5 @@ class Board(size: Int, array: Array[Array[Int]]) {
         val cell = comp.cells.head
         Move(cell.x, cell.y)
       }.toList
-  }
-
-  private def sort(cs: Seq[Component]): Seq[Component] = {
-    val colorMap = components
-      .groupBy(_.color)
-      .mapValues(_.size)
-
-    cs.sortBy(c => colorMap(c.color))
   }
 }
