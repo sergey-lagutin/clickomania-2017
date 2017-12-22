@@ -16,6 +16,6 @@ class BoardTest {
     board.components
       .foreach { c => println(c.cells) }
 
-    board.makeMove(Move(4,4))
+    board.makeMove(Move(4, 4))
   }
 }

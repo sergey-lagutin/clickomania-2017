@@ -32,7 +32,7 @@ class SolverTest {
         Array(0, 1, 1, 2, 0)
       ))
 
-    val moves = List(Move(3,4), Move(3,3), Move(4,1), Move(2,4), Move(2,3), Move(2,2), Move(1,4), Move(2,2), Move(1,3), Move(0,1), Move(0,0)).reverse
+    val moves = List(Move(3, 4), Move(3, 3), Move(4, 1), Move(2, 4), Move(2, 3), Move(2, 2), Move(1, 4), Move(2, 2), Move(1, 3), Move(0, 1), Move(0, 0)).reverse
     val result = moves.foldLeft(board)(_ makeMove _)
     println(result)
   }
