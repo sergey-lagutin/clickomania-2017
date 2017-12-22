@@ -14,16 +14,24 @@ object StrategyTest {
       Array(byColor, "byColor"),
       Array(byColorReverse, "byColorReverse"),
       Array(byMinX, "byMinX"),
+      Array(byMinXReverse, "byMinXReverse"),
       Array(byMaxX, "byMaxX"),
+      Array(byMaxXReverse, "byMaxXReverse"),
       Array(byMinY, "byMinY"),
+      Array(byMinYReverse, "byMinYReverse"),
       Array(byMaxY, "byMaxY"),
+      Array(byMaxYReverse, "byMaxYReverse"),
       Array(byMinYMaxX, "byMinYMaxX"),
-      Array(byMaxXMinY, "byMaxXMinY")
+      Array(byMaxXMinY, "byMaxXMinY"),
+      Array(byX, "byX"),
+      Array(byXReverse, "byXReverse"),
+      Array(byY, "byY"),
+      Array(byYReverse, "byYReverse")
     )
 
-  def doNothing: Strategy = (cs: Seq[Component]) => cs
+  private def doNothing: Strategy = (cs: Seq[Component]) => cs
 
-  def byColor: Strategy = (cs: Seq[Component]) =>
+  private def byColor: Strategy = (cs: Seq[Component]) =>
     cs.sorted(colorOrdering(cs))
 
   private def colorOrdering(cs: Seq[Component]): Ordering[Component] = {
@@ -31,22 +39,40 @@ object StrategyTest {
     (x: Component, y: Component) => colorMap(x.color) - colorMap(y.color)
   }
 
-  def byColorReverse: Strategy = (cs: Seq[Component]) =>
+  private def byColorReverse: Strategy = (cs: Seq[Component]) =>
     cs.sorted(colorOrdering(cs).reverse)
 
-  def byMinX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.minX)
+  private def byMinX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.minX)
 
-  def byMaxX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxX)
+  private def reverseInt = Ordering.Int.reverse
 
-  def byMinY: Strategy = (cs: Seq[Component]) => cs.sortBy(_.minY)
+  private def byMinXReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.minX)(reverseInt)
 
-  def byMaxY: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxY)
+  private def byMaxX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxX)
 
-  def byMinYMaxX: Strategy = (cs: Seq[Component]) =>
+  private def byMaxXReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxX)(reverseInt)
+
+  private def byMinY: Strategy = (cs: Seq[Component]) => cs.sortBy(_.minY)
+
+  private def byMinYReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.minY)(reverseInt)
+
+  private def byMaxY: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxY)
+
+  private def byMaxYReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxY)(reverseInt)
+
+  private def byMinYMaxX: Strategy = (cs: Seq[Component]) =>
     cs.sortBy(c => (c.minY, c.maxX))
 
-  def byMaxXMinY: Strategy = (cs: Seq[Component]) =>
+  private def byMaxXMinY: Strategy = (cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.minY))
+
+  private def byX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.x)
+
+  private def byXReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.x)(reverseInt)
+
+  private def byY: Strategy = (cs: Seq[Component]) => cs.sortBy(_.y)
+
+  private def byYReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
 }
 
 class StrategyTest {
