@@ -44,7 +44,7 @@ class Board(size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Component
 
     compact(newArray)
 
-    new Board(size, newArray.map(_.toArray))
+    new Board(size, newArray.map(_.toArray), strategy)
   }
 
   def rawData: Array[Array[Int]] = copy()
@@ -147,7 +147,7 @@ class Board(size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Component
       .filterNot(_.color == -1)
       .filterNot(_.cellCount == 1)
 
-    strategy(this, componentsToClick)
+    strategy(this, scala.util.Random.shuffle(componentsToClick))
       .map { comp =>
         val cell = comp.cells.head
         Move(cell.x, cell.y)

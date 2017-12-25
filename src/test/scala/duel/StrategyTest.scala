@@ -19,6 +19,7 @@ object StrategyTest {
       Array(byYReverse, "byYReverse"),
       Array(byMaxXDistance, "byMaxXDistance"),
       Array(custom, "custom"),
+      Array(minimizeComponentCount, "minimizeComponentCount"),
     )
 
   private def nothing: Strategy = (board: Board, cs: Seq[Component]) => cs
@@ -65,6 +66,16 @@ object StrategyTest {
           cs.sorted(sameColor(color).reverse))
       case None => byMaxXDistance(board, cs)
     }
+  }
+
+  private def minimizeComponentCount: Strategy = (board: Board, cs: Seq[Component]) => {
+    def componentCountAfterMove(b: Board)(c: Component): Int = {
+      val cell = c.cells.head
+      val move = Move(cell.x, cell.y)
+      b.makeMove(move).components.size
+    }
+
+    cs.sortBy(componentCountAfterMove(board))
   }
 }
 
