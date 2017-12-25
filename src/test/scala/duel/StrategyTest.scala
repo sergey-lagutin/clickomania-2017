@@ -20,6 +20,7 @@ object StrategyTest {
       Array(byMaxXDistance, "byMaxXDistance"),
       Array(custom, "custom"),
       Array(minimizeComponentCount, "minimizeComponentCount"),
+      Array(minimizeComponentCount2, "minimizeComponentCount2"),
     )
 
   private def nothing: Strategy = (board: Board, cs: Seq[Component]) => cs
@@ -73,6 +74,33 @@ object StrategyTest {
       val cell = c.cells.head
       val move = Move(cell.x, cell.y)
       b.makeMove(move).components.size
+    }
+
+    cs.sortBy(componentCountAfterMove(board))
+  }
+
+  private def minimizeComponentCount2: Strategy = (board: Board, cs: Seq[Component]) => {
+    def componentCountAfterMove(b: Board)(c: Component): Int = {
+      val cell = c.cells.head
+      val move = Move(cell.x, cell.y)
+      val newBoard = b.makeMove(move)
+      if (!newBoard.hasSolution) Int.MaxValue
+      else {
+        val possibleMoves =
+          scala.util.Random.shuffle(newBoard.components)
+            .filterNot(_.color == -1)
+            .filterNot(_.cellCount == 1)
+            .map { comp =>
+              val cell = comp.cells.head
+              Move(cell.x, cell.y)
+            }
+
+        if (possibleMoves.isEmpty) 0
+        else
+          possibleMoves
+            .map(m => newBoard.makeMove(m).components.size)
+            .min
+      }
     }
 
     cs.sortBy(componentCountAfterMove(board))
