@@ -1,12 +1,13 @@
 package duel
 
+import duel.StrategyTest.Strategy
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
 object StrategyTest {
 
-  trait Strategy extends (Seq[Component] => Seq[Component])
+  trait Strategy extends ((Board, Seq[Component]) => Seq[Component])
 
   def strategies: Array[AnyRef] =
     Array(
@@ -20,7 +21,7 @@ object StrategyTest {
       Array(custom, "custom"),
     )
 
-  private def nothing: Strategy = (cs: Seq[Component]) => cs
+  private def nothing: Strategy = (board: Board, cs: Seq[Component]) => cs
 
   private def colorOrdering(cs: Seq[Component]): Ordering[Component] = {
     val colorMap = cs.groupBy(_.color).mapValues(_.size)
@@ -29,19 +30,19 @@ object StrategyTest {
 
   private def reverseInt = Ordering.Int.reverse
 
-  private def byMaxX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.maxX)
+  private def byMaxX: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.maxX)
 
-  private def byMaxXMinY: Strategy = (cs: Seq[Component]) =>
+  private def byMaxXMinY: Strategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.minY))
 
-  private def byMaxXMaxY: Strategy = (cs: Seq[Component]) =>
+  private def byMaxXMaxY: Strategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.maxY))
 
-  private def byX: Strategy = (cs: Seq[Component]) => cs.sortBy(_.x)
+  private def byX: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.x)
 
-  private def byYReverse: Strategy = (cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
+  private def byYReverse: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
 
-  private def byMaxXDistance: Strategy = (cs: Seq[Component]) =>
+  private def byMaxXDistance: Strategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.distanceToZero))(Ordering.Tuple2(Ordering.Int, Ordering.Int))
 
   private def sameColor(color: Int): Ordering[Component] =
@@ -50,7 +51,7 @@ object StrategyTest {
       else if (y.color == color) 1
       else 0
 
-  private def custom: Strategy = (cs: Seq[Component]) => {
+  private def custom: Strategy = (board: Board, cs: Seq[Component]) => {
     val completedColor = cs
       .groupBy(_.color)
       .toList
@@ -60,9 +61,9 @@ object StrategyTest {
 
     completedColor match {
       case Some((color, _)) =>
-        byMaxXDistance(
+        byMaxXDistance(board,
           cs.sorted(sameColor(color).reverse))
-      case None => byMaxXDistance(cs)
+      case None => byMaxXDistance(board, cs)
     }
   }
 }
@@ -72,7 +73,7 @@ class StrategyTest {
 
   @MethodSource(Array("strategies"))
   @ParameterizedTest
-  def testFive(strategy: Seq[Component] => Seq[Component], name: String): Unit = {
+  def testFive(strategy: Strategy, name: String): Unit = {
     val boards = Boards.five.map(array => new Board(5, array, strategy))
     estimate(10, boards, name)
   }
@@ -80,7 +81,7 @@ class StrategyTest {
   @MethodSource(Array("strategies"))
   @ParameterizedTest
   @Disabled
-  def testSix(strategy: Seq[Component] => Seq[Component], name: String): Unit = {
+  def testSix(strategy: Strategy, name: String): Unit = {
     val boards = Boards.six.take(1).map(array => new Board(6, array, strategy))
     estimate(10, boards, name)
   }
