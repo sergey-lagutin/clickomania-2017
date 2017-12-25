@@ -27,7 +27,7 @@ case class Component(color: Int, boardSize: Int) {
   lazy val distanceToZero: Int = sqr(boardSize - maxX - 1) + sqr(minY)
 }
 
-class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Component]) {
+class Board(size: Int, array: Array[Array[Int]], strategy: Seq[Component] => Seq[Component]) {
   def this(size: Int, array: Array[Array[Int]]) {
     this(size, array, cs => cs.sortBy(c => (c.maxX, c.distanceToZero))(Ordering.Tuple2(Ordering.Int, Ordering.Int)))
   }
@@ -37,7 +37,7 @@ class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Com
     val newArray = copy()
 
     val cell = Cell(move.x, move.y)
-    val component = components.find(_.cells.toSet.contains(cell)).get
+    val component = components.find(_.cells.contains(cell)).get
     component.cells.foreach { cell =>
       newArray(cell.x).update(cell.y, -1)
     }
@@ -73,7 +73,7 @@ class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Com
 
     for {
       n <- 0 until size
-      x <- (1 until size)
+      x <- 1 until size
       row = array(x)
       prevRow = array(x - 1)
       if prevRow.forall(_ == -1)
@@ -143,11 +143,11 @@ class Board(size: Int, array: Array[Array[Int]], sort: Seq[Component] => Seq[Com
     components.size == 1 && components.head.color == -1
 
   def possibleMoves: List[Move] = {
-    val componentsToRemove = components
+    val componentsToClick = components
       .filterNot(_.color == -1)
       .filterNot(_.cellCount == 1)
 
-    sort(componentsToRemove)
+    strategy(componentsToClick)
       .map { comp =>
         val cell = comp.cells.head
         Move(cell.x, cell.y)
