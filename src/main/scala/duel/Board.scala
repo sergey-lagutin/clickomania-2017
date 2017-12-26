@@ -1,6 +1,6 @@
 package duel
 
-import scala.collection.mutable
+import scala.collection.{immutable, mutable}
 
 case class Move(x: Int, y: Int)
 
@@ -142,17 +142,19 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
   def isSolved: Boolean =
     components.size == 1 && components.head.color == -1
 
-  def possibleMoves: List[Move] = {
+  def componentsToClick: Seq[Component] = {
     val lockedColors = components
       .groupBy(_.color)
       .filter(pair => pair._2.size == 2 && pair._2.exists(_.cellCount == 1))
       .keySet
 
-    val componentsToClick = components
+     components
       .filterNot(_.color == -1)
       .filterNot(c => lockedColors(c.color))
       .filterNot(_.cellCount == 1)
+  }
 
+  def possibleMoves: List[Move] = {
     strategy(this, scala.util.Random.shuffle(componentsToClick))
       .map { comp =>
         val cell = comp.cells.head
