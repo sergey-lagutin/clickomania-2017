@@ -16,13 +16,12 @@ object StrategyTest {
       Array(byMaxXMaxY, "byMaxXMaxY"),
       Array(byX, "byX"),
       Array(byXSizeReverse, "byXSizeReverse"),
-      Array(byXSizeReverseOne, "byXSizeReverseOne"),
-      Array(byXOneSizeReverse, "byXOneSizeReverse"),
       Array(byYReverse, "byYReverse"),
       Array(byMaxXDistance, "byMaxXDistance"),
       Array(custom, "custom"),
       Array(minimizeOneCellComponent, "minimizeOneCellComponent"),
       Array(minimizeComponentCount, "minimizeComponentCount"),
+      Array(minimizeComponentCount2, "minimizeComponentCount2"),
     )
 
   private def reverseInt = Ordering.Int.reverse
@@ -39,14 +38,6 @@ object StrategyTest {
 
   private def byXSizeReverse: Strategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.x, c.cellCount))(Ordering.Tuple2(Ordering.Int, reverseInt))
-
-  private def byXSizeReverseOne: Strategy = (board: Board, cs: Seq[Component]) =>
-    cs.sortBy(c => (c.x, c.cellCount, oneCellComponentCountAfterMove(board)(c)))(
-      Ordering.Tuple3(Ordering.Int, reverseInt, Ordering.Int))
-
-  private def byXOneSizeReverse: Strategy = (board: Board, cs: Seq[Component]) =>
-    cs.sortBy(c => (c.x, oneCellComponentCountAfterMove(board)(c), c.cellCount))(
-      Ordering.Tuple3(Ordering.Int, Ordering.Int, reverseInt))
 
   private def byYReverse: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
 
@@ -94,6 +85,31 @@ object StrategyTest {
     cs.sortBy(componentCountAfterMove(board))
   }
 
+  private def minimizeComponentCount2: Strategy = (board: Board, cs: Seq[Component]) => {
+    def componentCountAfterMove(b: Board)(c: Component): Int = {
+      val cell = c.cells.head
+      val move = Move(cell.x, cell.y)
+      val newBoard = b.makeMove(move)
+      if (!newBoard.hasSolution) Int.MaxValue
+      else if (newBoard.isSolved) Int.MinValue
+      else {
+        val possibleMoves =
+          scala.util.Random.shuffle(newBoard.componentsToClick)
+            .map { comp =>
+              val cell = comp.cells.head
+              Move(cell.x, cell.y)
+            }
+
+        if (possibleMoves.isEmpty) Int.MaxValue
+        else
+          possibleMoves
+            .map(m => newBoard.makeMove(m).components.size)
+            .min
+      }
+    }
+
+    cs.sortBy(componentCountAfterMove(board))
+  }
 }
 
 class StrategyTest {
