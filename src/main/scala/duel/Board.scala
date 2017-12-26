@@ -27,7 +27,7 @@ case class Component(color: Int, boardSize: Int) {
   lazy val distanceToZero: Int = sqr(boardSize - maxX - 1) + sqr(minY)
 }
 
-class Board(size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Component]) => Seq[Component]) {
+class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Component]) => Seq[Component]) {
   def this(size: Int, array: Array[Array[Int]]) {
     this(size, array, (board, cs) => cs.sortBy(c => (c.maxX, c.distanceToZero))(Ordering.Tuple2(Ordering.Int, Ordering.Int)))
   }
