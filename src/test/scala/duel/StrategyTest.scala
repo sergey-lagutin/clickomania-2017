@@ -16,9 +16,12 @@ object StrategyTest {
       Array(byMaxXMaxY, "byMaxXMaxY"),
       Array(byX, "byX"),
       Array(byXSizeReverse, "byXSizeReverse"),
+      Array(byXSizeReverseOne, "byXSizeReverseOne"),
+      Array(byXOneSizeReverse, "byXOneSizeReverse"),
       Array(byYReverse, "byYReverse"),
       Array(byMaxXDistance, "byMaxXDistance"),
       Array(custom, "custom"),
+      Array(minimizeOneCellComponent, "minimizeOneCellComponent"),
       Array(minimizeComponentCount, "minimizeComponentCount"),
     )
 
@@ -37,6 +40,14 @@ object StrategyTest {
   private def byXSizeReverse: Strategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.x, c.cellCount))(Ordering.Tuple2(Ordering.Int, reverseInt))
 
+  private def byXSizeReverseOne: Strategy = (board: Board, cs: Seq[Component]) =>
+    cs.sortBy(c => (c.x, c.cellCount, oneCellComponentCountAfterMove(board)(c)))(
+      Ordering.Tuple3(Ordering.Int, reverseInt, Ordering.Int))
+
+  private def byXOneSizeReverse: Strategy = (board: Board, cs: Seq[Component]) =>
+    cs.sortBy(c => (c.x, oneCellComponentCountAfterMove(board)(c), c.cellCount))(
+      Ordering.Tuple3(Ordering.Int, Ordering.Int, reverseInt))
+
   private def byYReverse: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
 
   private def byMaxXDistance: Strategy = (board: Board, cs: Seq[Component]) =>
@@ -47,6 +58,15 @@ object StrategyTest {
       if (x.color == color) -1
       else if (y.color == color) 1
       else 0
+
+  private def oneCellComponentCountAfterMove(b: Board)(c: Component): Int = {
+    val cell = c.cells.head
+    val move = Move(cell.x, cell.y)
+    b.makeMove(move).components.count(_.cellCount == 1)
+  }
+
+  private def minimizeOneCellComponent: Strategy = (board: Board, cs: Seq[Component]) =>
+    cs.sortBy(oneCellComponentCountAfterMove(board))
 
   private def custom: Strategy = (board: Board, cs: Seq[Component]) => {
     val completedColor = cs
