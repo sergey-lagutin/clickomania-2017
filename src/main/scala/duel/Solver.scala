@@ -1,19 +1,23 @@
 package duel
 
-class Solver {
+class Solver(printSolveInfo: Boolean = true) {
   def findSolution(board: Board): Option[List[Move]] = {
     var counter = 0
 
     def loop(current: Board, acc: List[Move]): Option[List[Move]] = {
       counter += 1
       if (current.isSolved) {
-        println(s"success $counter")
-        printPath(board, acc.reverse)
+        if (printSolveInfo) {
+          println(s"success $counter")
+          printPath(board, acc.reverse)
+        }
         Some(acc)
       }
       else if (!current.hasSolution) {
-        println(s"failed $counter")
-        printPath(board, acc.reverse)
+        if (printSolveInfo) {
+          println(s"failed $counter")
+          printPath(board, acc.reverse)
+        }
         None
       }
       else {

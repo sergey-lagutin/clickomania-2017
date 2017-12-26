@@ -97,7 +97,7 @@ object StrategyTest {
 }
 
 class StrategyTest {
-  private val solver = new Solver
+  private val solver = new Solver(printSolveInfo = false)
 
   @MethodSource(Array("strategies"))
   @ParameterizedTest
