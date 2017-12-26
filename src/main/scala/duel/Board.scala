@@ -143,8 +143,14 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
     components.size == 1 && components.head.color == -1
 
   def possibleMoves: List[Move] = {
+    val lockedColors = components
+      .groupBy(_.color)
+      .filter(pair => pair._2.size == 2 && pair._2.exists(_.cellCount == 1))
+      .keySet
+
     val componentsToClick = components
       .filterNot(_.color == -1)
+      .filterNot(c => lockedColors(c.color))
       .filterNot(_.cellCount == 1)
 
     strategy(this, scala.util.Random.shuffle(componentsToClick))
