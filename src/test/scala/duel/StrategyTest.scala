@@ -11,24 +11,16 @@ object StrategyTest {
 
   def strategies: Array[AnyRef] =
     Array(
-      Array(nothing, "doNothing"),
       Array(byMaxX, "byMaxX"),
       Array(byMaxXMinY, "byMaxXMinY"),
       Array(byMaxXMaxY, "byMaxXMaxY"),
       Array(byX, "byX"),
+      Array(byXSizeReverse, "byXSizeReverse"),
       Array(byYReverse, "byYReverse"),
       Array(byMaxXDistance, "byMaxXDistance"),
       Array(custom, "custom"),
       Array(minimizeComponentCount, "minimizeComponentCount"),
-      Array(minimizeComponentCount2, "minimizeComponentCount2"),
     )
-
-  private def nothing: Strategy = (board: Board, cs: Seq[Component]) => cs
-
-  private def colorOrdering(cs: Seq[Component]): Ordering[Component] = {
-    val colorMap = cs.groupBy(_.color).mapValues(_.size)
-    (x: Component, y: Component) => colorMap(x.color) - colorMap(y.color)
-  }
 
   private def reverseInt = Ordering.Int.reverse
 
@@ -41,6 +33,9 @@ object StrategyTest {
     cs.sortBy(c => (c.maxX, c.maxY))
 
   private def byX: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.x)
+
+  private def byXSizeReverse: Strategy = (board: Board, cs: Seq[Component]) =>
+    cs.sortBy(c => (c.x, c.cellCount))(Ordering.Tuple2(Ordering.Int, reverseInt))
 
   private def byYReverse: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
 
@@ -79,32 +74,6 @@ object StrategyTest {
     cs.sortBy(componentCountAfterMove(board))
   }
 
-  private def minimizeComponentCount2: Strategy = (board: Board, cs: Seq[Component]) => {
-    def componentCountAfterMove(b: Board)(c: Component): Int = {
-      val cell = c.cells.head
-      val move = Move(cell.x, cell.y)
-      val newBoard = b.makeMove(move)
-      if (!newBoard.hasSolution) Int.MaxValue
-      else {
-        val possibleMoves =
-          scala.util.Random.shuffle(newBoard.components)
-            .filterNot(_.color == -1)
-            .filterNot(_.cellCount == 1)
-            .map { comp =>
-              val cell = comp.cells.head
-              Move(cell.x, cell.y)
-            }
-
-        if (possibleMoves.isEmpty) 0
-        else
-          possibleMoves
-            .map(m => newBoard.makeMove(m).components.size)
-            .min
-      }
-    }
-
-    cs.sortBy(componentCountAfterMove(board))
-  }
 }
 
 class StrategyTest {
