@@ -2,12 +2,12 @@ package duel
 
 class Worker {
   private val provider = new TaskProvider()
-  private val solver = new DfsSolver()
+  private val solver = new ManhattanSolver()
   private val start = System.currentTimeMillis()
   private var points: Int = 0
 
   def doTask(): Unit = {
-    val board = provider.get(5)
+    val board = provider.get(23)
     println(board)
     solver.findSolution(board) match {
       case Some(moves) =>

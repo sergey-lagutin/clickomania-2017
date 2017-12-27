@@ -154,7 +154,7 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
       .filterNot(_.cellCount == 1)
   }
 
-  def possibleMoves: List[Move] = {
+  lazy val possibleMoves: List[Move] = {
     strategy(this, scala.util.Random.shuffle(componentsToClick))
       .map { comp =>
         val cell = comp.cells.head
@@ -163,18 +163,20 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
   }
 
   private def distanceToSameColor(component: Component): Int = {
-    def distanceTo(cell: Cell)(that: Cell): Int =
-      (cell.x - that.x).abs + (cell.y - that.y).abs
+    def sqr(i: Int) = i * i
 
-    val distances = components
+    def distanceTo(cell: Cell)(that: Cell): Int =
+      3 * (cell.x - that.x).abs + 2 * (cell.y - that.y).abs
+
+    val cell = component.cells.head
+    components
       .filter(_.color == component.color)
-      .filterNot(_ == component)
       .flatMap(_.cells)
-      .map(distanceTo(component.cells.head))
-    if (distances.nonEmpty) distances.min else size*size
+      .filterNot(_ == cell)
+      .map(distanceTo(cell)).min
   }
 
-  def manhattan: Int =
+  lazy val manhattan: Int =
     components
       .filter(_.cellCount == 1)
       .map(distanceToSameColor)
