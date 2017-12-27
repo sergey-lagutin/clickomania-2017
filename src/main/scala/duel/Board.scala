@@ -161,4 +161,22 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
         Move(cell.x, cell.y)
       }.toList
   }
+
+  private def distanceToSameColor(component: Component): Long = {
+    def distanceTo(cell: Cell)(that: Cell): Long =
+      (cell.x - that.x).abs + (cell.y - that.y).abs
+
+    val distances = components
+      .filter(_.color == component.color)
+      .filterNot(_ == component)
+      .flatMap(_.cells)
+      .map(distanceTo(component.cells.head))
+    if (distances.nonEmpty) distances.min else Long.MaxValue
+  }
+
+  def manhattan: Long =
+    components
+      .filter(_.cellCount == 1)
+      .map(distanceToSameColor)
+      .sum
 }
