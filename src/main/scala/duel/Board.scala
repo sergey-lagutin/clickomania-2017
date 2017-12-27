@@ -1,6 +1,6 @@
 package duel
 
-import scala.collection.{immutable, mutable}
+import scala.collection.mutable
 
 case class Move(x: Int, y: Int)
 
@@ -29,7 +29,7 @@ case class Component(color: Int, boardSize: Int) {
 
 class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Component]) => Seq[Component]) {
   def this(size: Int, array: Array[Array[Int]]) {
-    this(size, array, (board, cs) => cs.sortBy(c => (c.maxX, c.distanceToZero))(Ordering.Tuple2(Ordering.Int, Ordering.Int)))
+    this(size, array, (board, cs) => cs.sortBy(c => (c.maxX, c.maxY)))
   }
 
   def makeMove(move: Move): Board = {
@@ -148,7 +148,7 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
       .filter(pair => pair._2.size == 2 && pair._2.exists(_.cellCount == 1))
       .keySet
 
-     components
+    components
       .filterNot(_.color == -1)
       .filterNot(c => lockedColors(c.color))
       .filterNot(_.cellCount == 1)
