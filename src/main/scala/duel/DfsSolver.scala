@@ -1,7 +1,7 @@
 package duel
 
-class DfsSolver(printSolveInfo: Boolean = true) {
-  def findSolution(board: Board): Option[List[Move]] = {
+class DfsSolver(printSolveInfo: Boolean = true) extends Solver {
+  override def findSolution(board: Board): Option[List[Move]] = {
     var counter = 0
 
     def loop(current: Board, acc: List[Move]): Option[List[Move]] = {
