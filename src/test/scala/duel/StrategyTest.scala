@@ -1,7 +1,7 @@
 package duel
 
 import duel.StrategyTest.Strategy
-import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.{Disabled, Test}
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -130,7 +130,7 @@ class StrategyTest {
     estimate(10, boards, name)
   }
 
-  private def estimate(testAmount: Int, boards: Seq[Board], name: String): Unit = {
+  private def estimate(testAmount: Int, boards: Seq[Board], name: String, solver: Solver = this.solver): Unit = {
     var min = Long.MaxValue
     var max = Long.MinValue
     var total = 0L
@@ -147,6 +147,12 @@ class StrategyTest {
       total += time
     }
     println(s"$name avg: ${total / testAmount}; min: $min; max: $max ms")
+  }
+
+  @Test
+  def manhattanSolverShouldWork(): Unit = {
+    val boards = Boards.five.map(array => new Board(5, array))
+    estimate(10, boards, "manhattan", new ManhattanSolver)
   }
 
 }
