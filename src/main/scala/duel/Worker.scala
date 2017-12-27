@@ -2,7 +2,7 @@ package duel
 
 class Worker {
   private val provider = new TaskProvider()
-  private val solver = new Solver()
+  private val solver = new DfsSolver()
   private val start = System.currentTimeMillis()
   private var points: Int = 0
 

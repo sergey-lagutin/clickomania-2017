@@ -2,8 +2,8 @@ package duel
 
 import org.junit.jupiter.api.Test
 
-class SolverTest {
-  private val solver = new Solver
+class DfsSolverTest {
+  private val solver = new DfsSolver
 
   @Test def shouldBuildComponent(): Unit = {
     val board = new Board(5,

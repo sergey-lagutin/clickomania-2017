@@ -1,6 +1,6 @@
 package duel
 
-class Solver(printSolveInfo: Boolean = true) {
+class DfsSolver(printSolveInfo: Boolean = true) {
   def findSolution(board: Board): Option[List[Move]] = {
     var counter = 0
 

@@ -259,7 +259,7 @@ object Boards {
 
   def print(size: Int, amount: Int): Unit = {
     val provider = new TaskProvider
-    val solver = new Solver
+    val solver = new DfsSolver
     List.fill(amount) {
       val board = provider.get(size)
       println {
