@@ -19,7 +19,6 @@ class ManhattanSolver extends Solver {
       val path = current.path
       val currentBoard = current.board
       println(s"${current.points} ${current.componentCount}")
-      println(currentBoard)
       if (currentBoard.isSolved) Some(path)
       else {
         pq ++= currentBoard.possibleMoves

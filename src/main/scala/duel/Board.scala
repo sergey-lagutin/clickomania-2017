@@ -168,7 +168,7 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
     def sqr(i: Int) = i * i
 
     def distanceTo(cell: Cell)(that: Cell): Int =
-      5 * (cell.x - that.x).abs + 2 * (cell.y - that.y).abs
+      3 * (cell.x - that.x).abs + (cell.y - that.y).abs
 
     val cell = component.cells.head
     components
@@ -178,9 +178,11 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
       .map(distanceTo(cell)).min
   }
 
-  lazy val manhattan: Int =
+  lazy val manhattan: Int = {
     components
       .filter(_.cellCount == 1)
       .map(distanceToSameColor)
-      .sum
+      .sum +
+      components.count(_.cellCount / 3 > size)
+  }
 }
