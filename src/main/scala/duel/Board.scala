@@ -87,7 +87,9 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
 
   private def arrayToString(array: Array[Array[Int]]): String =
     array
-      .map(_.mkString(start = "|", sep = " ", end = "|"))
+      .map(_
+        .map(e => if (e >= 0) " " + e else e.toString)
+        .mkString(start = "|", sep = "", end = "|"))
       .mkString("\n")
 
   override def toString: String =
@@ -166,7 +168,7 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
     def sqr(i: Int) = i * i
 
     def distanceTo(cell: Cell)(that: Cell): Int =
-      3 * (cell.x - that.x).abs + 2 * (cell.y - that.y).abs
+      5 * (cell.x - that.x).abs + 2 * (cell.y - that.y).abs
 
     val cell = component.cells.head
     components

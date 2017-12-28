@@ -7,7 +7,7 @@ class Worker {
   private var points: Int = 0
 
   def doTask(): Unit = {
-    val board = provider.get(23)
+    val board = provider.get(31)
     println(board)
     solver.findSolution(board) match {
       case Some(moves) =>
