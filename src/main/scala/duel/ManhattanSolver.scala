@@ -8,7 +8,7 @@ class ManhattanSolver extends Solver {
       (x: Solution, y: Solution) =>
         if (x.points != y.points)
           x.points - y.points
-        else y.componentCount - x.componentCount
+        else x.componentCount - y.componentCount
     ).reverse
 
     pq.+=(Solution(board, Nil))
@@ -19,6 +19,9 @@ class ManhattanSolver extends Solver {
       val path = current.path
       val currentBoard = current.board
       println(s"${current.points} ${current.componentCount}")
+      if (current.componentCount <= 10) {
+        println(currentBoard)
+      }
       if (currentBoard.isSolved) Some(path)
       else {
         pq ++= currentBoard.possibleMoves
