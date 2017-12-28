@@ -27,8 +27,8 @@ case class Component(color: Int, boardSize: Int) {
   lazy val distanceToZero: Int = sqr(boardSize - maxX - 1) + sqr(minY)
 }
 
-class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Component]) => Seq[Component]) {
-  def this(size: Int, array: Array[Array[Int]]) {
+class Board(val size: Int, array: Array[Array[Byte]], strategy: (Board, Seq[Component]) => Seq[Component]) {
+  def this(size: Int, array: Array[Array[Byte]]) {
     this(size, array, (board, cs) => cs.sortBy(c => (c.maxX, c.maxY)))
   }
 
@@ -47,10 +47,10 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
     new Board(size, newArray.map(_.toArray), strategy)
   }
 
-  def rawData: Array[Array[Int]] = copy()
+  def rawData: Array[Array[Byte]] = copy()
 
-  private def copy(): Array[Array[Int]] = {
-    val a = Array.fill(size, size)(-1)
+  private def copy(): Array[Array[Byte]] = {
+    val a = Array.fill(size, size)(-1.toByte)
     for {
       x <- array.indices
       y <- array.indices
@@ -58,7 +58,7 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
     a
   }
 
-  private def compact(array: Array[Array[Int]]): Array[Array[Int]] = {
+  private def compact(array: Array[Array[Byte]]): Array[Array[Byte]] = {
     for {
       n <- 0 until size
       x <- array.indices
@@ -85,7 +85,7 @@ class Board(val size: Int, array: Array[Array[Int]], strategy: (Board, Seq[Compo
     array
   }
 
-  private def arrayToString(array: Array[Array[Int]]): String =
+  private def arrayToString(array: Array[Array[Byte]]): String =
     array
       .map(_
         .map(e => if (e >= 0) " " + e else e.toString)

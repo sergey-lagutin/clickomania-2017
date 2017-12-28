@@ -7,12 +7,12 @@ import org.json4s.jackson.Serialization
 import scalaj.http.Http
 
 case class Game(width: Int, height: Int, cells: String) {
-  val realCells: Array[Array[Int]] =
+  val realCells: Array[Array[Byte]] =
     for {
       col <- cells.split("\\],")
     } yield col.split("\\D+")
       .filter(_.nonEmpty)
-      .map(_.toInt)
+      .map(_.toByte)
 }
 
 case class Result(status: String, score: Int)

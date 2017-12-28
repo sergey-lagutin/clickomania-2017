@@ -1,7 +1,7 @@
 package duel
 
 import duel.StrategyTest.Strategy
-import org.junit.jupiter.api.{Disabled, Test}
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -119,14 +119,6 @@ class StrategyTest {
   @ParameterizedTest
   def testFive(strategy: Strategy, name: String): Unit = {
     val boards = Boards.five.map(array => new Board(5, array, strategy))
-    estimate(10, boards, name)
-  }
-
-  @MethodSource(Array("strategies"))
-  @ParameterizedTest
-  @Disabled
-  def testSix(strategy: Strategy, name: String): Unit = {
-    val boards = Boards.six.take(1).map(array => new Board(6, array, strategy))
     estimate(10, boards, name)
   }
 
