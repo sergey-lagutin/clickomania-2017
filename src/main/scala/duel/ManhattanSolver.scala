@@ -39,6 +39,7 @@ class ManhattanSolver extends Solver {
         val possibleSolutions = currentBoard.possibleMoves
           .map(move => Solution(currentBoard.makeMove(move), move :: path))
           .filter(_.board.hasSolution)
+          .filter(_.board.manhattan <= currentBoard.manhattan * 1.05)
         val newSolutions = possibleSolutions
           .filterNot(visited)
 

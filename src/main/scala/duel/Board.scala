@@ -183,6 +183,6 @@ class Board(val size: Int, array: Array[Array[Byte]], strategy: (Board, Seq[Comp
       .filter(_.cellCount == 1)
       .map(distanceToSameColor)
       .sum +
-      components.count(_.cellCount * 2 > size)
+      3 * components.count(_.cellCount * 2 > size)
   }
 }
