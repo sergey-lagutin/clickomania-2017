@@ -144,4 +144,10 @@ class StrategyTest {
     val boards = Boards.five.map(array => new Board(5, array))
     estimate(10, boards, "manhattan", new ManhattanSolver)
   }
+
+  @Test
+  def bfsShouldWork(): Unit = {
+    val boards = Boards.five.take(6).map(array => new Board(5, array))
+    estimate(10, boards, "BFS", new BfsSolver)
+  }
 }
