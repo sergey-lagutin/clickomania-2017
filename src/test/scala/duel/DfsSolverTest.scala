@@ -3,7 +3,7 @@ package duel
 import org.junit.jupiter.api.Test
 
 class DfsSolverTest {
-  private val solver = new DfsSolver
+  private val solver = new Dfs.DfsSolver
 
   @Test def shouldBuildComponent(): Unit = {
     val board = new Board(5,

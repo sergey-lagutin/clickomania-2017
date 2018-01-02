@@ -1,5 +1,6 @@
 package duel
 
+import duel.Dfs.DfsStrategy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -110,7 +111,7 @@ object StrategyTest {
 }
 
 class StrategyTest {
-  private def solver(strategy: DfsStrategy) = new DfsSolver(strategy, printSolveInfo = false)
+  private def solver(strategy: DfsStrategy) = new Dfs.DfsSolver(strategy, printSolveInfo = false)
 
   @MethodSource(Array("strategies"))
   @ParameterizedTest
