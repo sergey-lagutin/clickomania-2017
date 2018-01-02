@@ -162,26 +162,4 @@ class Board(val size: Int, array: Array[Array[Byte]]) {
         val cell = comp.cells.head
         Move(cell.x, cell.y)
       }.toList
-
-  private def distanceToSameColor(component: Component): Int = {
-    def sqr(i: Int) = i * i
-
-    def distanceTo(cell: Cell)(that: Cell): Int =
-      5 * (cell.x - that.x).abs + 2 * (cell.y - that.y).abs
-
-    val cell = component.cells.head
-    components
-      .filter(_.color == component.color)
-      .flatMap(_.cells)
-      .filterNot(_ == cell)
-      .map(distanceTo(cell)).min
-  }
-
-  lazy val manhattan: Int = {
-    components
-      .filter(_.cellCount == 1)
-      .map(distanceToSameColor)
-      .sum +
-      3 * components.count(_.cellCount * 2 > size)
-  }
 }

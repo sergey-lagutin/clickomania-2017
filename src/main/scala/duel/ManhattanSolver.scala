@@ -16,30 +16,16 @@ class ManhattanSolver extends Solver {
 
     pq.+=(Solution(board, Nil))
 
-    def compactQueue(): Unit = {
-      val componentCount = board.components.size
-      val limit = componentCount * board.size
-      if (pq.size > limit) {
-        println("compact")
-        val elements = pq.dequeueAll
-        val newElements = elements.sorted(ordering).take(limit / 2)
-        pq ++= newElements
-      }
-    }
-
     @tailrec
     def loop(): Option[List[Move]] = {
-      compactQueue()
       val current = pq.dequeue()
       val path = current.path
       val currentBoard = current.board
-      println(s"${current.points} ${current.componentCount} ${pq.size}")
       if (currentBoard.isSolved) Some(path)
       else {
         val possibleSolutions = currentBoard.possibleMoves
           .map(move => Solution(currentBoard.makeMove(move), move :: path))
           .filter(_.board.hasSolution)
-          .filter(_.board.manhattan <= currentBoard.manhattan * 1.05)
         val newSolutions = possibleSolutions
           .filterNot(visited)
 
@@ -53,7 +39,7 @@ class ManhattanSolver extends Solver {
   }
 
   case class Solution(board: Board, path: List[Move]) {
-    val points: Int = board.manhattan
+    val points: Int = manhattan
     val componentCount: Int = board.components.size
     private val array = board.rawData
 
@@ -65,6 +51,26 @@ class ManhattanSolver extends Solver {
           this.array.asInstanceOf[Array[AnyRef]],
           that.array.asInstanceOf[Array[AnyRef]])
       }
+
+    private def distanceToSameColor(component: Component): Int = {
+      def distanceTo(cell: Cell)(that: Cell): Int =
+        5 * (cell.x - that.x).abs + 2 * (cell.y - that.y).abs
+
+      val cell = component.cells.head
+      board.components
+        .filter(_.color == component.color)
+        .flatMap(_.cells)
+        .filterNot(_ == cell)
+        .map(distanceTo(cell)).min
+    }
+
+    private def manhattan: Int = {
+      board.components
+        .filter(_.cellCount == 1)
+        .map(distanceToSameColor)
+        .sum +
+        3 * board.components.count(_.cellCount * 2 > board.size)
+    }
   }
 
 }
