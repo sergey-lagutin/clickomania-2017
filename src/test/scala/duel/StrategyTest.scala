@@ -1,13 +1,10 @@
 package duel
 
-import duel.StrategyTest.Strategy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
 object StrategyTest {
-
-  trait Strategy extends ((Board, Seq[Component]) => Seq[Component])
 
   def strategies: Array[AnyRef] =
     Array(
@@ -26,22 +23,22 @@ object StrategyTest {
 
   private def reverseInt = Ordering.Int.reverse
 
-  private def byMaxX: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.maxX)
+  private def byMaxX: DfsStrategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.maxX)
 
-  private def byMaxXMinY: Strategy = (board: Board, cs: Seq[Component]) =>
+  private def byMaxXMinY: DfsStrategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.minY))
 
-  private def byMaxXMaxY: Strategy = (board: Board, cs: Seq[Component]) =>
+  private def byMaxXMaxY: DfsStrategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.maxY))
 
-  private def byX: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.x)
+  private def byX: DfsStrategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.x)
 
-  private def byXSizeReverse: Strategy = (board: Board, cs: Seq[Component]) =>
+  private def byXSizeReverse: DfsStrategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.x, c.cellCount))(Ordering.Tuple2(Ordering.Int, reverseInt))
 
-  private def byYReverse: Strategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
+  private def byYReverse: DfsStrategy = (board: Board, cs: Seq[Component]) => cs.sortBy(_.y)(reverseInt)
 
-  private def byMaxXDistance: Strategy = (board: Board, cs: Seq[Component]) =>
+  private def byMaxXDistance: DfsStrategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(c => (c.maxX, c.distanceToZero))(Ordering.Tuple2(Ordering.Int, Ordering.Int))
 
   private def sameColor(color: Int): Ordering[Component] =
@@ -56,10 +53,10 @@ object StrategyTest {
     b.makeMove(move).components.count(_.cellCount == 1)
   }
 
-  private def minimizeOneCellComponent: Strategy = (board: Board, cs: Seq[Component]) =>
+  private def minimizeOneCellComponent: DfsStrategy = (board: Board, cs: Seq[Component]) =>
     cs.sortBy(oneCellComponentCountAfterMove(board))
 
-  private def custom: Strategy = (board: Board, cs: Seq[Component]) => {
+  private def custom: DfsStrategy = (board: Board, cs: Seq[Component]) => {
     val completedColor = cs
       .groupBy(_.color)
       .toList
@@ -75,7 +72,7 @@ object StrategyTest {
     }
   }
 
-  private def minimizeComponentCount: Strategy = (board: Board, cs: Seq[Component]) => {
+  private def minimizeComponentCount: DfsStrategy = (board: Board, cs: Seq[Component]) => {
     def componentCountAfterMove(b: Board)(c: Component): Int = {
       val cell = c.cells.head
       val move = Move(cell.x, cell.y)
@@ -85,7 +82,7 @@ object StrategyTest {
     cs.sortBy(componentCountAfterMove(board))
   }
 
-  private def minimizeComponentCount2: Strategy = (board: Board, cs: Seq[Component]) => {
+  private def minimizeComponentCount2: DfsStrategy = (board: Board, cs: Seq[Component]) => {
     def componentCountAfterMove(b: Board)(c: Component): Int = {
       val cell = c.cells.head
       val move = Move(cell.x, cell.y)
@@ -113,16 +110,16 @@ object StrategyTest {
 }
 
 class StrategyTest {
-  private val solver = new DfsSolver(printSolveInfo = false)
+  private def solver(strategy: DfsStrategy) = new DfsSolver(strategy, printSolveInfo = false)
 
   @MethodSource(Array("strategies"))
   @ParameterizedTest
-  def testFive(strategy: Strategy, name: String): Unit = {
+  def testFive(strategy: DfsStrategy, name: String): Unit = {
     val boards = Boards.five.map(array => new Board(5, array, strategy))
-    estimate(10, boards, name)
+    estimate(10, boards, name, solver(strategy))
   }
 
-  private def estimate(testAmount: Int, boards: Seq[Board], name: String, solver: Solver = this.solver): Unit = {
+  private def estimate(testAmount: Int, boards: Seq[Board], name: String, solver: Solver): Unit = {
     var min = Long.MaxValue
     var max = Long.MinValue
     var total = 0L
@@ -146,5 +143,4 @@ class StrategyTest {
     val boards = Boards.five.map(array => new Board(5, array))
     estimate(10, boards, "manhattan", new ManhattanSolver)
   }
-
 }

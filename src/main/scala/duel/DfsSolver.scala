@@ -1,6 +1,6 @@
 package duel
 
-class DfsSolver(printSolveInfo: Boolean = true) extends Solver {
+class DfsSolver(strategy: DfsStrategy, printSolveInfo: Boolean = true) extends Solver {
   override def findSolution(board: Board): Option[List[Move]] = {
     var counter = 0
 
