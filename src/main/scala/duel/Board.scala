@@ -101,31 +101,30 @@ class Board(val size: Int, array: Array[Array[Byte]]) {
         list.size > 1 || list.head.cellCount > 1
       }
 
-  private val cells = new mutable.HashSet[Cell]()
+  val components = {
+    val cells = new mutable.HashSet[Cell]()
 
-  private def inRange(fromIncl: Int, toExcl: Int)(i: Int): Boolean =
-    fromIncl <= i && i < toExcl
+    def inBoard(i: Int): Boolean =
+      0 <= i && i < size
 
-  private def inBoard(cell: Cell): Boolean =
-    inRange(0, size)(cell.x) && inRange(0, size)(cell.y)
+    def cellInBoard(cell: Cell): Boolean =
+      inBoard(cell.x) && inBoard(cell.y)
 
+    def buildComponent(component: Component, cell: Cell): Unit = {
+      def sameColor(that: Cell): Boolean =
+        array(cell.x)(cell.y) == array(that.x)(that.y)
 
-  private def buildComponent(component: Component, cell: Cell): Unit = {
-    def sameColor(that: Cell): Boolean =
-      array(cell.x)(cell.y) == array(that.x)(that.y)
+      cells += cell
+      component.cells += cell
+      List((-1, 0), (1, 0), (0, -1), (0, 1))
+        .map {
+          case (dx, dy) => Cell(cell.x + dx, cell.y + dy)
+        }.filter(cellInBoard)
+        .filterNot(cells)
+        .filter(sameColor)
+        .foreach(buildComponent(component, _))
+    }
 
-    cells += cell
-    component.cells += cell
-    List((-1, 0), (1, 0), (0, -1), (0, 1))
-      .map {
-        case (dx, dy) => Cell(cell.x + dx, cell.y + dy)
-      }.filter(inBoard)
-      .filterNot(cells)
-      .filter(sameColor)
-      .foreach(buildComponent(component, _))
-  }
-
-  val components =
     for {
       x <- array.indices
       column = array(x)
@@ -137,6 +136,7 @@ class Board(val size: Int, array: Array[Array[Byte]]) {
       buildComponent(component, cell)
       component
     }
+  }
 
   def isSolved: Boolean =
     components.size == 1 && components.head.color == -1
