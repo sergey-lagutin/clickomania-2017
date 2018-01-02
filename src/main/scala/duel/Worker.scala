@@ -16,7 +16,7 @@ class Worker {
           case Left(error) =>
             println(error)
             println(orderedMoves)
-            orderedMoves.foldLeft(board){
+            orderedMoves.foldLeft(board) {
               case (b, move) =>
                 println(b)
                 println(move)
