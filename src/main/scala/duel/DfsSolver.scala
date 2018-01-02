@@ -1,6 +1,7 @@
 package duel
 
-class DfsSolver(strategy: DfsStrategy, printSolveInfo: Boolean = true) extends Solver {
+class DfsSolver(strategy: DfsStrategy = (board, cs) => cs.sortBy(c => (c.maxX, c.maxY)),
+                printSolveInfo: Boolean = true) extends Solver {
   override def findSolution(board: Board): Option[List[Move]] = {
     var counter = 0
 
@@ -21,13 +22,15 @@ class DfsSolver(strategy: DfsStrategy, printSolveInfo: Boolean = true) extends S
         None
       }
       else {
-        current.possibleMoves.foldLeft(Option.empty[List[Move]]) { case (acc1, move) =>
-          if (acc1.isDefined) acc1
-          else {
-            val newBoard = current.makeMove(move)
-            loop(newBoard, move :: acc)
+        val components = strategy(current, scala.util.Random.shuffle(current.componentsToClick))
+        current.possibleMovesFor(components)
+          .foldLeft(Option.empty[List[Move]]) { case (acc1, move) =>
+            if (acc1.isDefined) acc1
+            else {
+              val newBoard = current.makeMove(move)
+              loop(newBoard, move :: acc)
+            }
           }
-        }
       }
     }
 

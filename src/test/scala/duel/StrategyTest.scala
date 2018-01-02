@@ -115,7 +115,7 @@ class StrategyTest {
   @MethodSource(Array("strategies"))
   @ParameterizedTest
   def testFive(strategy: DfsStrategy, name: String): Unit = {
-    val boards = Boards.five.map(array => new Board(5, array, strategy))
+    val boards = Boards.five.map(array => new Board(5, array))
     estimate(10, boards, name, solver(strategy))
   }
 

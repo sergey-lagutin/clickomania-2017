@@ -27,10 +27,7 @@ case class Component(color: Int, boardSize: Int) {
   lazy val distanceToZero: Int = sqr(boardSize - maxX - 1) + sqr(minY)
 }
 
-class Board(val size: Int, array: Array[Array[Byte]], strategy: (Board, Seq[Component]) => Seq[Component]) {
-  def this(size: Int, array: Array[Array[Byte]]) {
-    this(size, array, (board, cs) => cs.sortBy(c => (c.maxX, c.maxY)))
-  }
+class Board(val size: Int, array: Array[Array[Byte]]) {
 
   def makeMove(move: Move): Board = {
 
@@ -44,7 +41,7 @@ class Board(val size: Int, array: Array[Array[Byte]], strategy: (Board, Seq[Comp
 
     compact(newArray)
 
-    new Board(size, newArray.map(_.toArray), strategy)
+    new Board(size, newArray.map(_.toArray))
   }
 
   def rawData: Array[Array[Byte]] = copy()
@@ -156,13 +153,15 @@ class Board(val size: Int, array: Array[Array[Byte]], strategy: (Board, Seq[Comp
       .filterNot(_.cellCount == 1)
   }
 
-  lazy val possibleMoves: List[Move] = {
-    strategy(this, scala.util.Random.shuffle(componentsToClick))
+  lazy val possibleMoves: List[Move] =
+    possibleMovesFor(scala.util.Random.shuffle(componentsToClick))
+
+  def possibleMovesFor(components: Seq[Component]): List[Move] =
+    components
       .map { comp =>
         val cell = comp.cells.head
         Move(cell.x, cell.y)
       }.toList
-  }
 
   private def distanceToSameColor(component: Component): Int = {
     def sqr(i: Int) = i * i
