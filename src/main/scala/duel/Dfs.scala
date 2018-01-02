@@ -4,27 +4,13 @@ object Dfs {
 
   trait DfsStrategy extends ((Board, Seq[Component]) => Seq[Component])
 
-  class DfsSolver(strategy: DfsStrategy = (board, cs) => cs.sortBy(c => (c.maxX, c.maxY)),
-                  printSolveInfo: Boolean = true) extends Solver {
+  class DfsSolver(strategy: DfsStrategy = (board, cs) => cs.sortBy(c => (c.maxX, c.maxY))) extends Solver {
     override def findSolution(board: Board): Option[List[Move]] = {
-      var counter = 0
-
       def loop(current: Board, acc: List[Move]): Option[List[Move]] = {
-        counter += 1
-        if (current.isSolved) {
-          if (printSolveInfo) {
-            println(s"success $counter")
-            printPath(board, acc.reverse)
-          }
+        if (current.isSolved)
           Some(acc)
-        }
-        else if (!current.hasSolution) {
-          if (printSolveInfo) {
-            println(s"failed $counter")
-            printPath(board, acc.reverse)
-          }
+        else if (!current.hasSolution)
           None
-        }
         else {
           val components = strategy(current, scala.util.Random.shuffle(current.componentsToClick))
           current.possibleMovesFor(components)
@@ -39,22 +25,6 @@ object Dfs {
       }
 
       loop(board, Nil)
-    }
-
-    private def printPath(board: Board, moves: List[Move]): Unit = {
-      val boards = moves.foldLeft(List(board)) {
-        case (acc, m) => acc.head.makeMove(m) :: acc
-      }.reverse
-
-      for {
-        i <- 0 until board.size
-      } println(boards.map(
-        _.rawData(i)
-          .map(e => if (e >= 0) " " + e else e.toString)
-          .mkString(start = "|", sep = "", end = "|"))
-        .mkString("\t"))
-
-      println()
     }
   }
 

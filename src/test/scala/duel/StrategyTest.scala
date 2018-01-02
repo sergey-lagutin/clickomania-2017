@@ -111,7 +111,7 @@ object StrategyTest {
 }
 
 class StrategyTest {
-  private def solver(strategy: DfsStrategy) = new Dfs.DfsSolver(strategy, printSolveInfo = false)
+  private def solver(strategy: DfsStrategy) = new Dfs.DfsSolver(strategy)
 
   @MethodSource(Array("strategies"))
   @ParameterizedTest
